@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日练习 - 移动端生成助手</title>
+    <style>
+        /* 基础样式复用：移动端外壳 */
+        body { background-color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: "PingFang SC", sans-serif; }
+        .mobile-container { width: 375px; height: 667px; background-color: #f7f7f7; border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 8px solid #000; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .status-bar { height: 44px; background: #fff; text-align: center; line-height: 54px; font-weight: bold; border-bottom: 1px solid #eee; }
+        .preview-scroll { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; }
+        .task-card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .task-title { font-size: 16px; font-weight: bold; color: #333; margin-bottom: 8px; border-left: 4px solid #07c160; padding-left: 8px;}
+        .bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); padding: 16px 20px 30px; backdrop-filter: blur(10px); border-top: 1px solid #eee; }
+        .print-btn { width: 100%; padding: 14px; background: #07c160; color: white; border: none; border-radius: 24px; font-size: 18px; font-weight: bold; cursor: pointer; }
+
+        /* 隐藏打印用 Canvas */
+        #offscreenCanvas { position: fixed; top: -9999px; left: -9999px; }
+
+        /* 打印媒体查询：确保打印时只显示生成的图 */
+        @media print {
+            body * { visibility: hidden; }
+            #printImage { visibility: visible; position: absolute; left: 0; top: 0; width: 100%; }
+            @page { margin: 0; size: A4; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="mobile-container">
+    <div class="status-bar">练习预览</div>
+    <div class="preview-scroll" id="domPreview">
+    </div>
+    <div class="bottom-bar">
+        <button class="print-btn" onclick="generateAndPrint()">🖨️ 生成并打印 A4 练习卷</button>
+    </div>
+</div>
+
+<canvas id="offscreenCanvas" width="1588" height="2246"></canvas>
+
+<script>
+    const mockData = {
+        date: "2026年3月3日",
+        tasks: {
+            trace: [{word: "春", pinyin: "chūn"}, {word: "花", pinyin: "huā"}],
+            dictation: [{words: ["开", "心"], pinyins: ["kāi", "xīn"]}],
+            match: { left: ["大", "高"], right: ["低", "小"] },
+            reading: "春风轻轻吹，花园里开满了五颜六色的花。我今天真开心！"
+        }
+    };
+
+    // 1. 初始化移动端预览 (DOM)
+    function renderMobileUI() {
+        const container = document.getElementById('domPreview');
+        container.innerHTML = `
+            <div class="task-card">
+                <div class="task-title">一、 描红练习</div>
+                <div>今日生字：${mockData.tasks.trace.map(t => t.word).join('、')}</div>
+            </div>
+            <div class="task-card">
+                <div class="task-title">二、 看拼音写词</div>
+                <div>${mockData.tasks.dictation[0].pinyins.join(' ')}</div>
+            </div>
+            <div class="task-card">
+                <div class="task-title">三、 亲子阅读</div>
+                <div style="font-size:14px; color:#666">${mockData.tasks.reading}</div>
+            </div>
+        `;
+    }
+
+    // 2. 封装 Canvas 绘图工具 (复用 练习题.html 逻辑)
+    const DrawingTools = {
+        drawTianzige(ctx, x, y, size) {
+            ctx.save();
+            ctx.strokeStyle = '#ff9999';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, size, size);
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(x, y + size / 2); ctx.lineTo(x + size, y + size / 2);
+            ctx.moveTo(x + size / 2, y); ctx.lineTo(x + size / 2, y + size);
+            ctx.stroke();
+            ctx.restore();
+        },
+        drawSectionTitle(ctx, text, x, y) {
+            ctx.font = 'bold 22px sans-serif'; ctx.fillStyle = '#333';
+            ctx.textAlign = 'left'; ctx.fillText(text, x, y);
+        }
+    };
+
+    // 3. 执行 A4 级离屏渲染
+    async function renderA4Paper() {
+        const canvas = document.getElementById('offscreenCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.scale(2, 2); // 2倍缩放保持高清
+
+        // 背景
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, 794, 1123);
+
+        // 页眉
+        ctx.font = 'bold 32px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#333'; //
+        ctx.fillText('🌟 每日微练习 🌟', 794/2, 60);
+
+        let currentY = 150;
+        const startX = 60;
+
+        // 第一题：描红
+        DrawingTools.drawSectionTitle(ctx, '一、 每日新字（描红与临写）', startX, currentY);
+        currentY += 60;
+        mockData.tasks.trace.forEach((item, i) => {
+            const x = startX + 20;
+            const y = currentY + i * 110;
+            DrawingTools.drawTianzige(ctx, x, y, 70);
+
+            // 【新增】重置对齐方式为居中，否则会继承标题的 'left' 导致向右偏移
+            ctx.textAlign = 'center';
+            ctx.font = '20px Arial'; ctx.fillText(item.pinyin, x + 35, y - 10);
+            ctx.font = '56px "Kaiti", "楷体", serif'; ctx.textBaseline = 'middle';
+            ctx.fillText(item.word, x + 35, y + 35);
+            // 绘制描红格子
+            DrawingTools.drawTianzige(ctx, x + 90, y, 70);
+            ctx.globalAlpha = 0.2; ctx.fillText(item.word, x + 90 + 35, y + 35);
+            ctx.globalAlpha = 1.0;
+        });
+
+        // 更多题目绘制逻辑... (此处省略，结构同上)
+
+        return canvas.toDataURL('image/jpeg', 0.9);
+    }
+
+    // 4. 打印控制器
+    async function generateAndPrint() {
+        const btn = document.querySelector('.print-btn');
+        btn.innerText = '正在精准排版...';
+
+        try {
+            // 1. 生成高分图片数据
+            const imgData = await renderA4Paper();
+
+            // 2. 使用主页面直接打印（匹配你的 @media print CSS）
+            let printImage = document.getElementById('printImage');
+            if (!printImage) {
+                printImage = document.createElement('img');
+                printImage.id = 'printImage';
+                document.body.appendChild(printImage);
+            }
+            printImage.src = imgData;
+
+            // 3. 给浏览器一点点时间渲染这个 Image，然后触发打印
+            setTimeout(() => {
+                window.print();
+                btn.innerText = '🖨️ 生成并打印 A4 练习卷';
+            }, 300);
+
+        } catch (err) {
+            console.error(err);
+            btn.innerText = '❌ 生成失败，请重试';
+        }
+    }
+
+    window.onload = renderMobileUI;
+</script>
+</body>
+</html>

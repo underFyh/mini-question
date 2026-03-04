@@ -1,0 +1,52 @@
+# ===============
+# Node & Dependencies
+# ===============
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===============
+# NestJS Backend (test-paper-backend)
+# ===============
+test-paper-backend/dist/
+test-paper-backend/coverage/
+test-paper-backend/.nest/
+
+# ===============
+# UniApp Frontend (test-paper-frontend)
+# ===============
+test-paper-frontend/dist/
+test-paper-frontend/unpackage/
+# uni-app 打包和运行产生的临时目录
+unpackage/
+
+# ===============
+# Build outputs (Global)
+# ===============
+dist/
+build/
+*.tsbuildinfo
+
+# ===============
+# Environment variables
+# ===============
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ===============
+# IDE & OS Files
+# ===============
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db

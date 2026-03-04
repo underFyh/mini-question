@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日微练习 - 完整版 Demo</title>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            padding: 20px;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #07c160;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(7, 193, 96, 0.2);
+        }
+
+        button:hover {
+            background-color: #06ad56;
+        }
+
+        .paper-container {
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 794px;
+            height: 1123px; /* A4 比例 */
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /* 打印专用样式 */
+        @media print {
+            /* 1. 隐藏掉不需要打印的控件和 UI 元素 */
+            .controls, button {
+                display: none !important;
+            }
+
+            /* 2. 重置 Body 和容器的边距、背景 */
+            body {
+                background-color: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                display: block !important; /* 覆盖 flex 布局，防止居中导致位置偏离 */
+            }
+
+            /* 3. 确保容器占满全屏，且没有任何阴影 */
+            .paper-container {
+                width: 100% !important;
+                height: auto !important;
+                box-shadow: none !important;
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            /* 4. Canvas 强制宽度适配 A4 纸 */
+            canvas {
+                width: 100% !important;
+                height: auto !important;
+            }
+
+            /* 5. (可选) 强制背景颜色打印 (如果某些绘图需要背景色) */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        /* 针对打印机页面的特殊设置 (去掉页眉页脚的默认边距) */
+        @page {
+            size: A4;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <button onclick="window.print()">🖨️ 打印今日挑战卷</button>
+</div>
+
+<div class="paper-container">
+    <canvas id="a4Paper" width="1588" height="2246"></canvas>
+</div>
+
+<script>
+    const canvas = document.getElementById('a4Paper');
+    const ctx = canvas.getContext('2d');
+    ctx.scale(2, 2); // 处理高分屏抗锯齿
+
+    // ==========================================
+    // 1. 模拟 AI 返回的结构化 JSON 数据
+    // ==========================================
+    const mockData = {
+        date: "2026年3月3日",
+        tasks: {
+            trace: [
+                {word: "春", pinyin: "chūn"},
+                {word: "花", pinyin: "huā"}
+            ],
+            dictation: [
+                {words: ["开", "心"], pinyins: ["kāi", "xīn"]},
+                {words: ["云", "朵"], pinyins: ["yún", "duǒ"]}
+            ],
+            match: {
+                left: ["大", "多", "高"],
+                right: ["低", "小", "少"]
+            },
+            reading: "春风轻轻吹，花园里开满了五颜六色的花朵。我今天真开心！"
+        }
+    };
+
+    // ==========================================
+    // 2. 基础绘图工具函数
+    // ==========================================
+    function drawTianzige(x, y, size) {
+        ctx.save();
+        ctx.strokeStyle = '#ff9999'; // 护眼的浅红色
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, size, size);
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(x, y + size / 2);
+        ctx.lineTo(x + size, y + size / 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x + size / 2, y);
+        ctx.lineTo(x + size / 2, y + size);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function drawSectionTitle(text, x, y) {
+        ctx.font = 'bold 22px sans-serif';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'left';
+        ctx.fillText(text, x, y);
+    }
+
+    // ==========================================
+    // 3. 核心排版引擎
+    // ==========================================
+    function renderPage() {
+        ctx.clearRect(0, 0, 794, 1123);
+
+        // --- 页眉 ---
+        ctx.font = 'bold 36px sans-serif';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌟 每日通关微练习 🌟', 794 / 2, 60);
+
+        ctx.font = '16px sans-serif';
+        ctx.fillStyle = '#666';
+        ctx.textAlign = 'right';
+        ctx.fillText(`挑战日期：${mockData.date}`, 794 - 20, 60);
+
+        // 全局布局参数
+        const startX = 60; // 距离左边
+        let currentY = 150; // 距离上边
+        const gridSize = 70; // 田字格稍作调整，留出更多呼吸感
+
+        // --- 第一题：描红与临写 ---
+        drawSectionTitle('一、 每日新字（先描红，再自己写哦）', startX, currentY);
+        currentY += 60;
+
+        mockData.tasks.trace.forEach((item, index) => {
+            const rowY = currentY + index * (gridSize + 40);
+            for (let col = 0; col < 4; col++) {
+                const colX = startX + 20 + col * (gridSize + 20);
+                drawTianzige(colX, rowY, gridSize);
+
+                if (col === 0) {
+                    // 示范字与拼音
+                    ctx.font = '18px Arial';
+                    ctx.fillStyle = '#333';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(item.pinyin, colX + gridSize / 2, rowY - 10);
+                    ctx.font = `${gridSize * 0.8}px "Kaiti", "楷体", serif`;
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(item.word, colX + gridSize / 2, rowY + gridSize / 2);
+                } else if (col === 1) {
+                    // 描红字
+                    ctx.font = `${gridSize * 0.8}px "Kaiti", "楷体", serif`;
+                    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(item.word, colX + gridSize / 2, rowY + gridSize / 2);
+                }
+                // 第 3, 4 格留空让孩子自己写
+            }
+        });
+
+        // --- 第二题：看拼音写词语 ---
+        currentY += 2 * (gridSize + 40) + 40;
+        drawSectionTitle('二、 拼音魔法（看拼音，写出正确的字）', startX, currentY);
+        currentY += 60;
+
+        mockData.tasks.dictation.forEach((item, index) => {
+            const groupX = startX + 20 + index * 250; // 两组词语左右排开
+            item.words.forEach((word, wIndex) => {
+                const charX = groupX + wIndex * (gridSize + 10);
+                drawTianzige(charX, currentY, gridSize);
+                // 画拼音
+                ctx.font = '20px Arial';
+                ctx.fillStyle = '#333';
+                ctx.textAlign = 'center';
+                ctx.fillText(item.pinyins[wIndex], charX + gridSize / 2, currentY - 10);
+            });
+        });
+
+        // --- 第三题：趣味连连看 ---
+        currentY += gridSize + 80;
+        drawSectionTitle('三、 趣味连连看（找找反义词，用线连起来）', startX, currentY);
+        currentY += 60;
+
+        const matchYStart = currentY;
+        mockData.tasks.match.left.forEach((text, i) => {
+            const y = matchYStart + i * 50;
+            // 左侧文字与圆点
+            ctx.font = '24px "Kaiti", "楷体", serif';
+            ctx.fillStyle = '#333';
+            ctx.textAlign = 'right';
+            ctx.fillText(text, startX + 100, y);
+            ctx.beginPath();
+            ctx.arc(startX + 130, y - 8, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 右侧圆点与文字
+            const rightText = mockData.tasks.match.right[i];
+            ctx.beginPath();
+            ctx.arc(startX + 300, y - 8, 5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.textAlign = 'left';
+            ctx.fillText(rightText, startX + 330, y);
+        });
+
+        // --- 第四题：亲子大声读 ---
+        currentY += 3 * 50 + 60;
+        drawSectionTitle('四、 亲子大声读（读给爸爸妈妈听）', startX, currentY);
+        currentY += 40;
+
+        // 绘制一个圆角虚线阅读框
+        // ctx.save();
+        // ctx.setLineDash([6, 6]);
+        // ctx.strokeStyle = '#4CAF50';
+        // ctx.lineWidth = 2;
+        // ctx.strokeRect(startX, currentY, 794 - startX * 2, 100);
+        // ctx.restore();
+
+        ctx.font = '22px "Kaiti", "楷体", serif';
+        ctx.fillStyle = '#333';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(mockData.tasks.reading, startX + 20, currentY + 35);
+
+        // 互动打卡框
+        // currentY += 130;
+        // ctx.font = '18px sans-serif';
+        // ctx.fillStyle = '#e67e22';
+        // ctx.fillText('🔲 我已经大声朗读啦！', startX + 20, currentY);
+
+        // --- 页脚签名区 ---
+        // ctx.font = '20px sans-serif';
+        // ctx.fillStyle = '#666';
+        // ctx.textAlign = 'right';
+        // ctx.fillText('🏅 家长盖章/签名：______________', 794 - 60, 1060);
+    }
+
+    window.onload = renderPage;
+</script>
+</body>
+</html>

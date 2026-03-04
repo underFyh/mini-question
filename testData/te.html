@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+
+<body>
+  <script>
+    async function downloadPDF(requestData) {
+      try {
+        // 1. 发起 fetch 请求 (假设你的接口是 POST)
+        const response = await fetch('http://localhost:3000/api/pdf/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData)
+        });
+
+        // 检查响应状态
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // 2. 将响应转换为 Blob 对象 (关键点)
+        const blob = await response.blob();
+
+        // 3. 创建一个指向该 Blob 的临时 URL
+        const url = window.URL.createObjectURL(blob);
+
+        // 4. 动态创建一个 <a> 标签并模拟点击下载
+        const link = document.createElement('a');
+        link.href = url;
+
+        // 你可以直接写死文件名，也可以尝试从响应头中动态提取
+        link.download = 'practice.pdf';
+
+        // 将标签添加到 DOM 中（某些浏览器需要这一步才能点击）
+        document.body.appendChild(link);
+        link.click();
+
+        // 5. 清理工作：移除标签并释放内存
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+      } catch (error) {
+        console.error('PDF 下载失败:', error);
+        // 这里可以加入给用户的 UI 错误提示
+      }
+    }
+
+    downloadPDF();
+  </script>
+</body>
+
+</html>
