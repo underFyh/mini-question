@@ -1,0 +1,25 @@
+<style>
+    /* 第二题：看拼音写词 */
+    .task-dictation {
+        display: flex;
+        gap: 60px;
+    }
+</style>
+
+<div class="section">
+    <div class="section-title">二、 拼音魔法（看拼音，写出正确的字）</div>
+    <div class="task-dictation">
+        <% tasks.forEach(function(group) { %>
+            <div class="dictation-group">
+                <% group.pinyins.forEach(function(pinyin) { %>
+                    <div class="grid-group">
+                        <div class="pinyin">
+                            <%= pinyin %>
+                        </div>
+                        <div class="tianzige"></div>
+                    </div>
+                    <% }) %>
+            </div>
+            <% }) %>
+    </div>
+</div>

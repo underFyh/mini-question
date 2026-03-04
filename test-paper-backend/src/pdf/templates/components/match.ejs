@@ -1,0 +1,59 @@
+<style>
+    /* 第三题：连连看 */
+    .task-match {
+        display: flex;
+        width: 300px;
+        margin-left: 40px;
+        justify-content: space-between;
+    }
+
+    .match-col {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .match-item {
+        display: flex;
+        align-items: center;
+        font-family: "Kaiti", "楷体", serif;
+        font-size: 24px;
+    }
+
+    .match-col.left .match-item {
+        justify-content: flex-end;
+    }
+
+    .match-col.right .match-item {
+        justify-content: flex-start;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+        background: #333;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 0 15px;
+    }
+</style>
+
+<div class="section">
+    <div class="section-title">三、 趣味连连看（找找反义词，用线连起来）</div>
+    <div class="task-match">
+        <div class="match-col left">
+            <% tasks.left.forEach(function(text) { %>
+                <div class="match-item"><span>
+                        <%= text %>
+                    </span><span class="dot"></span></div>
+                <% }) %>
+        </div>
+        <div class="match-col right">
+            <% tasks.right.forEach(function(text) { %>
+                <div class="match-item"><span class="dot"></span><span>
+                        <%= text %>
+                    </span></div>
+                <% }) %>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,28 @@
+<script setup lang="ts">
+import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
+
+onLaunch(() => {
+    // 隐藏原生 tabBar
+    uni.hideTabBar({
+        animation: false
+    })
+})
+
+onShow(() => {
+    // 有些平台在 onShow 时原生 tabBar 会重新跳出来，保险起见再隐藏一次
+    uni.hideTabBar({
+        animation: false
+    })
+})
+
+onLaunch(() => {
+  console.log("App Launch");
+});
+onShow(() => {
+  console.log("App Show");
+});
+onHide(() => {
+  console.log("App Hide");
+});
+</script>
+<style></style>
