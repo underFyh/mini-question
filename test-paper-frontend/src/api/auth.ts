@@ -1,4 +1,4 @@
-import request from '@/utils/request';
+import request from '../utils/request';
 
 // 复用你提供的 Request 接口
 export interface WechatLoginReq {
@@ -20,5 +20,9 @@ export interface BaseResp<T = string> {
  * 微信快捷登录
  */
 export const wechatLoginApi = (data: WechatLoginReq) => {
-    return request.post<any, BaseResp>('/miniprogram/auth/wechatLogin', data);
+    return request<any>({
+        url: '/auth/login',
+        method: 'POST',
+        data: data,
+    });
 };

@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from "@dcloudio/uni-app";
+import { useUserStore } from './stores/user';
 
 onLaunch(() => {
+    const userStore = useUserStore();
+    // 触发静默登录
+    userStore.login();
+
     // 隐藏原生 tabBar
     uni.hideTabBar({
         animation: false

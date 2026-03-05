@@ -1,6 +1,5 @@
 <template>
     <view class="page-container">
-        <!-- 移除 type="primary" 因为 uniapp 并没有这个原生内置类型验证，改用 class -->
         <button class="primary-btn" :loading="isGenerating" @click="downloadPDF">
             {{ isGenerating ? '试卷生成中...' : '下载PDF' }}
         </button>
@@ -107,6 +106,8 @@ const downloadPDF = async () => {
     button {
         width: 80%;
         border-radius: 8px;
+    }
+    .primary-btn {
         box-shadow: 0 4px 12px rgba(7, 193, 96, 0.3);
     }
 }
