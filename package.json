@@ -6,7 +6,8 @@
         "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
         "dev:backend": "npm --prefix test-paper-backend run start:dev",
         "dev:frontend": "npm --prefix test-paper-frontend run dev:mp-weixin",
-        "install:all": "npm install --prefix test-paper-backend && npm install --prefix test-paper-frontend"
+        "install:all": "npm install --prefix test-paper-backend && npm install --prefix test-paper-frontend",
+        "stop": "taskkill /F /IM node.exe"
     },
     "devDependencies": {
         "concurrently": "^8.2.2"

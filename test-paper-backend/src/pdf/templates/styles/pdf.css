@@ -1,0 +1,224 @@
+/* ==================================================
+   1. 基础页面与打印重置
+   ================================================== */
+body {
+    background-color: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 20px;
+    color: #333;
+}
+
+.controls {
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 12px 24px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #07c160;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(7, 193, 96, 0.2);
+}
+
+* {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-sizing: border-box;
+}
+
+@media print {
+    .controls {
+        display: none !important;
+    }
+    body {
+        background: none;
+        padding: 0;
+        margin: 0;
+        display: block;
+    }
+    .paper-container {
+        box-shadow: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
+
+@page {
+    size: A4;
+    margin: 0;
+}
+
+/* ==================================================
+   2. A4 纸张排版容器
+   ================================================== */
+.paper-container {
+    background: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 794px;
+    min-height: 1123px;
+    padding: 30px;
+    position: relative;
+}
+
+/* --- 页眉 --- */
+.header {
+    text-align: center;
+    position: relative;
+    margin-bottom: 50px;
+}
+
+.header h1 {
+    font-size: 36px;
+    margin: 0 0 10px 0;
+}
+
+.header .date {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #666;
+    font-size: 16px;
+}
+
+/* --- 题目区块通用样式 --- */
+.section {
+    margin-bottom: 30px;
+    page-break-inside: avoid;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+/* ==================================================
+   3. 核心组件：纯 CSS 渲染的田字格
+   ================================================== */
+.grid-group {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.pinyin {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    height: 24px;
+    margin-bottom: 4px;
+}
+
+.tianzige {
+    width: 70px;
+    height: 70px;
+    border: 2px solid #ff9999;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tianzige::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    border-top: 1px dashed #ff9999;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.tianzige::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 100%;
+    border-left: 1px dashed #ff9999;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.char {
+    font-family: "Kaiti", "楷体", serif;
+    font-size: 56px;
+    z-index: 2;
+    line-height: 1;
+}
+
+.char.watermark {
+    color: rgba(0, 0, 0, 0.15);
+}
+
+/* ==================================================
+   4. 具体题型样式
+   ================================================== */
+
+/* 第一题：描红 */
+.task-trace .trace-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+/* 第二题：看拼音写词 */
+.task-dictation {
+    display: flex;
+    gap: 60px;
+}
+
+/* 第三题：连连看 */
+.task-match {
+    display: flex;
+    width: 300px;
+    margin-left: 40px;
+    justify-content: space-between;
+}
+
+.match-col {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.match-item {
+    display: flex;
+    align-items: center;
+    font-family: "Kaiti", "楷体", serif;
+    font-size: 24px;
+}
+
+.match-col.left .match-item {
+    justify-content: flex-end;
+}
+
+.match-col.right .match-item {
+    justify-content: flex-start;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background: #333;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 15px;
+}
+
+/* 第四题：阅读 */
+.task-reading {
+    font-family: "Kaiti", "楷体", serif;
+    font-size: 24px;
+    line-height: 1.8;
+    padding: 0 20px;
+}

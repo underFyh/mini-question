@@ -16,8 +16,8 @@ export class PdfController {
         const grade = body?.grade || '幼小衔接';
 
         // --- 测试阶段：暂不调用真实 AI，直接返回 Mock 数据 ---
-        const aiData = await this.aiService.generateDailyPaper(grade);
-        // const aiData = (this.aiService as any).getFallbackData('今天');
+        // const aiData = await this.aiService.generateDailyPaper(grade);
+        const aiData = (this.aiService as any).getFallbackData('今天');
 
         // 2. 调用 Service 获取生成的 PDF 二进制流 (将 AI 生成的数据传入)
         const buffer = await this.pdfService.generateA4(aiData);

@@ -55,7 +55,27 @@ export class PdfService {
             const page = await browser.newPage();
 
             const templatePath = path.join(process.cwd(), 'src', 'pdf', 'templates', 'layout.ejs');
-            const htmlContent = await ejs.renderFile(templatePath, { data });
+
+            // ==========================================
+            // [原 EJS 方案保留]
+            // const htmlContent = await ejs.renderFile(templatePath, { data });
+            // ==========================================
+
+            // ==========================================
+            // [新 JSX / React 方案]
+            const ReactDOMServer = await import('react-dom/server');
+            const React = await import('react');
+            const { PaperLayout } = await import('./templates/Layout.js');
+            const fs = await import('fs');
+
+            // 读取集中的 CSS
+            const cssPath = path.join(process.cwd(), 'src', 'pdf', 'templates', 'styles', 'pdf.css');
+            const cssStyle = fs.readFileSync(cssPath, 'utf8');
+
+            const htmlContent = '<!DOCTYPE html>' + ReactDOMServer.renderToStaticMarkup(
+                React.createElement(PaperLayout, { data, cssStyle })
+            );
+            // ==========================================
 
             await page.setContent(htmlContent);
             await page.evaluate(() => document.fonts.ready);
