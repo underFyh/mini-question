@@ -41,10 +41,11 @@ const request = <T = any>(options: RequestOptions): Promise<T> => {
 
                 // 2. 正常的 JSON 业务请求处理
                 if (statusCode === 200 || statusCode === 201) {
-                    // 根据后端的 BaseResp 结构判断逻辑 (假设后端有 code 字段)
-                    if (resData.code === '000000' || resData.code === '200' || resData.status === 0) {
-                        resolve(resData as T);
+                    // 后端成功响应格式: { code: 200, data: any, message: 'success' }
+                    if (resData.code === 200) {
+                        resolve(resData.data as T);
                     } else {
+                        // 业务状态码不为200的情况 (一般不会走进这里，因为后端错误会是其他 HTTP statusCode)
                         uni.showToast({
                             title: resData.message || resData.msg || '业务异常',
                             icon: 'none'
@@ -52,11 +53,12 @@ const request = <T = any>(options: RequestOptions): Promise<T> => {
                         reject(resData);
                     }
                 } else {
+                    // 后端错误响应格式: { code: HTTP_STATUS, message: 'error msg', data: null, ... }
                     uni.showToast({
-                        title: '服务器异常',
+                        title: resData.message || '请求失败',
                         icon: 'none'
                     });
-                    reject(response);
+                    reject(resData || response);
                 }
             },
             fail: (error) => {
