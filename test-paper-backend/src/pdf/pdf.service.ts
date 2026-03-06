@@ -9,25 +9,41 @@ export class PdfService {
      * 生成PDF
      */
     async generateA4(printData: any) {
-        // 兜底数据
+        // 兜底数据 (更新为新的 tasks 数组结构)
         const data = printData || {
             tittle: '每日通关微练习',
             date: '2026年3月4日',
-            tasks: {
-                trace: [
-                    { word: '春', pinyin: 'chūn' },
-                    { word: '花', pinyin: 'huā' }
-                ],
-                dictation: [
-                    { words: ['开', '心'], pinyins: ['kāi', 'xīn'] },
-                    { words: ['云', '朵'], pinyins: ['yún', 'duǒ'] }
-                ],
-                match: {
-                    left: ['大', '多', '高'],
-                    right: ['低', '小', '少']
+            tasks: [
+                {
+                    type: "trace",
+                    title: "一、每日新字（先描红，再自己写哦）",
+                    data: [
+                        { word: "人", pinyin: "rén" },
+                        { word: "口", pinyin: "kǒu" }
+                    ]
                 },
-                reading: '春风轻轻吹，花园里开满了五颜六色的花朵。我今天真开心！'
-            }
+                {
+                    type: "dication",
+                    title: "二、拼音魔法（看拼音，写出正确的字）",
+                    data: [
+                        { words: ["开", "心"], pinyins: ["kāi", "xīn"] },
+                        { words: ["云", "朵"], pinyins: ["yún", "duǒ"] }
+                    ]
+                },
+                {
+                    type: "match",
+                    title: "三、趣味连连看（找找反义词，用线连起来）",
+                    data: {
+                        left: ["天", "日", "水"],
+                        right: ["地", "月", "火"]
+                    }
+                },
+                {
+                    type: "reading",
+                    title: "四、亲子大声读（读给爸爸妈妈听）",
+                    data: "春风轻轻吹，花园里开满了五颜六色的花朵。我今天真开心！"
+                }
+            ]
         };
 
         let browser;

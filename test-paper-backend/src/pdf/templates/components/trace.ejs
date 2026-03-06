@@ -7,9 +7,11 @@
 </style>
 
 <div class="section">
-    <div class="section-title">一、 每日新字（先描红，再自己写哦）</div>
+    <div class="section-title">
+        <%= title %>
+    </div>
     <div class="task-trace">
-        <% tasks.forEach(function(item) { %>
+        <% data.forEach(function(item) { %>
             <div class="trace-row">
                 <div class="grid-group">
                     <div class="pinyin">

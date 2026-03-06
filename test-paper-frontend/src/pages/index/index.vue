@@ -14,25 +14,7 @@ declare const wx: any;
 
 const isGenerating = ref(false);
 
-const mockRequestData = {
-    tittle: "每日通关微练习",
-    date: "2026年3月4日",
-    tasks: {
-        trace: [
-            { word: "春", pinyin: "chūn" },
-            { word: "花", pinyin: "huā" }
-        ],
-        dictation: [
-            { words: ["开", "心"], pinyins: ["kāi", "xīn"] },
-            { words: ["云", "朵"], pinyins: ["yún", "duǒ"] }
-        ],
-        match: {
-            left: ["大", "多", "高"],
-            right: ["低", "小", "少"]
-        },
-        reading: "春风轻轻吹，花园里开满了五颜六色的花朵。我今天真开心！"
-    }
-};
+// (Removed mockRequestData)
 
 const downloadPDF = async () => {
     if (isGenerating.value) return;
@@ -44,7 +26,7 @@ const downloadPDF = async () => {
         const resData: any = await request({
             url: '/api/pdf/generate',
             method: 'POST',
-            data: mockRequestData,
+            data: { grade: '幼小衔接' }, // 传入年级，不再传死数据，由后端去 AI 拿
             responseType: 'arraybuffer' // 触发刚刚在 interceptor 添加的拦截逻辑
         });
 

@@ -183,21 +183,19 @@
             </div>
         </div>
 
-        <% if (data.tasks.trace && data.tasks.trace.length> 0) { %>
-            <%- include('components/trace', { tasks: data.tasks.trace }) %>
-                <% } %>
-
-                    <% if (data.tasks.dictation && data.tasks.dictation.length> 0) { %>
-                        <%- include('components/dictation', { tasks: data.tasks.dictation }) %>
-                            <% } %>
-
-                                <% if (data.tasks.match && data.tasks.match.left && data.tasks.match.right) { %>
-                                    <%- include('components/match', { tasks: data.tasks.match }) %>
-                                        <% } %>
-
-                                            <% if (data.tasks.reading) { %>
-                                                <%- include('components/reading', { reading: data.tasks.reading }) %>
-                                                    <% } %>
+        <% if (data.tasks && data.tasks.length> 0) { %>
+            <% data.tasks.forEach(function(task) { %>
+                <% if (task.type==='trace' ) { %>
+                    <%- include('components/trace', { title: task.title, data: task.data }) %>
+                        <% } else if (task.type==='dication' || task.type==='dictation' ) { %>
+                            <%- include('components/dictation', { title: task.title, data: task.data }) %>
+                                <% } else if (task.type==='match' ) { %>
+                                    <%- include('components/match', { title: task.title, data: task.data }) %>
+                                        <% } else if (task.type==='reading' ) { %>
+                                            <%- include('components/reading', { title: task.title, data: task.data }) %>
+                                                <% } %>
+                                                    <% }) %>
+                                                        <% } %>
     </div>
 </body>
 

@@ -39,17 +39,19 @@
 </style>
 
 <div class="section">
-    <div class="section-title">三、 趣味连连看（找找反义词，用线连起来）</div>
+    <div class="section-title">
+        <%= title %>
+    </div>
     <div class="task-match">
         <div class="match-col left">
-            <% tasks.left.forEach(function(text) { %>
+            <% data.left.forEach(function(text) { %>
                 <div class="match-item"><span>
                         <%= text %>
                     </span><span class="dot"></span></div>
                 <% }) %>
         </div>
         <div class="match-col right">
-            <% tasks.right.forEach(function(text) { %>
+            <% data.right.forEach(function(text) { %>
                 <div class="match-item"><span class="dot"></span><span>
                         <%= text %>
                     </span></div>
