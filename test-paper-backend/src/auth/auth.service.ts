@@ -55,6 +55,7 @@ export class AuthService {
                 }
             };
         } catch (error) {
+            console.error('WeChat Login Error:', error);
             throw new UnauthorizedException('Authentication failed');
         }
     }

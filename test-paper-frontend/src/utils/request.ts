@@ -1,5 +1,6 @@
-const BASE_URL = 'http://192.168.10.215:3000'; // 真机调试时必须使用电脑的局域网 IP (之前是 localhost)
-
+// const BASE_URL = 'http://192.168.10.215:3000'; // 真机调试时必须使用电脑的局域网 IP (之前是 localhost)
+// const BASE_URL = 'http://192.168.1.11:3000'; // 真机调试时必须使用电脑的局域网 IP (之前是 localhost)
+const BASE_URL = 'http://49.235.167.122:3000'; // 真机调试时必须使用电脑的局域网 IP (之前是 localhost)
 interface RequestOptions extends UniApp.RequestOptions {
     url: string;
     method?: 'OPTIONS' | 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'TRACE' | 'CONNECT';
